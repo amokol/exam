@@ -1,0 +1,160 @@
+﻿@{
+    ViewData["Title"] = "Merge Rates Page";
+}
+<script>
+    function mergeRates()
+    {
+        var download_rates = $("#download_rates").val();
+        var upload_rates = $("#upload_rates").val();
+        var json_data = JSON.stringify({ euro_rates: download_rates, country_rate: upload_rates });
+        $('#tbl_merge_rate tbody').empty();
+        $('#tbl_amount_group tbody').empty();
+        if (download_rates == "" || upload_rates == "")
+        {
+            alert("Please make sure to download the latest rates and upload the file to be merged.");
+        }
+        else
+        {
+            $.ajax(
+                {
+                    url: "/Home/MergeData",
+                    data: json_data,
+                    dataType: "json",
+                    contentType: "application/json; charset=utf-8",
+                    type: "POST",
+                    beforeSend: function () {
+                        $('#loader').show();
+                    },
+                    complete: function () {
+                        $('#loader').hide();
+                    },
+                    success: function (data) {
+                        updateMergeTable(data);
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        console.log(XMLHttpRequest);
+                        console.log(textStatus);
+                        console.log(errorThrown);
+
+                    }
+                }
+            );
+        }
+
+    }
+    var eu_group = "EU";
+    var row_group = "ROW";
+    var uk_group = "United Kingdom";
+    var aus_group = "Australia";
+    var sa_group = "South Africa";
+
+    var eu_total_amount = 0;
+    var row_total_amount = 0;
+    var uk_total_amount = 0;
+    var aus_total_amount = 0;
+    var sa_total_amount = 0;
+
+    function updateMergeTable(data) {
+        var rates = JSON.parse(data);
+        $(rates).each(function (index, item) {
+            $('#tbl_merge_rate tbody').append(
+                '<tr><td>' + item.rate_date +
+                '</td><td>' + item.country +
+                '</td><td>' + item.currency +
+                '</td><td>' + item.amount +
+                '</td><td>' + item.amount_eur +
+                '</td><td>' + item.country_group +
+                '</td></tr>'
+            )
+
+            if (item.country_group == eu_group)
+            {
+                eu_total_amount = eu_total_amount + item.amount_eur;
+            }
+            else if (item.country_group == row_group)
+            {
+                row_total_amount = row_total_amount + item.amount_eur;
+            }
+            else if (item.country_group == uk_group)
+            {
+                uk_total_amount = uk_total_amount + item.amount_eur;
+            }
+            else if (item.country_group == aus_group)
+            {
+                aus_total_amount = aus_total_amount + item.amount_eur;
+            }
+            else if (item.country_group == sa_group)
+            {
+                sa_total_amount = sa_total_amount + item.amount_eur;
+            }
+
+        });
+
+        $('#tbl_amount_group tbody').append(
+            '<tr><td>' + eu_group +
+            '</td><td>' + eu_total_amount +
+            '</td></tr>' + '<tr><td>' + row_group +
+            '</td><td>' + row_total_amount +
+            '</td></tr>' + '<tr><td>' + uk_group +
+            '</td><td>' + uk_total_amount +
+            '</td></tr>' + '<tr><td>' + aus_group +
+            '</td><td>' + aus_total_amount +
+            '</td></tr>' + '<tr><td>' + sa_group +
+            '</td><td>' + sa_total_amount +
+            '</td></tr>'
+
+        )
+
+        $('#tbl_merge_rate').DataTable({
+            "search": {
+                "caseInsensitive": true
+            },
+            ordering: true
+        });
+
+        $('#tbl_amount_group').DataTable({
+            searching: false,
+            "order": [[1, 'desc']]
+        });
+
+    }
+
+</script>
+<div class="text-left">
+    <div class="buttons">
+        <div class="submit-button" id="submit-button">
+            <input type="button" id="btn_submit" class="btn btn-info" value="Merge" onclick="mergeRates();" />
+        </div>
+    </div>
+    <div class="alert alert-success" role="alert">
+        <h4 class="alert-heading">Rate List Per Country</h4>
+    </div>
+    <table class="table" id="tbl_merge_rate">
+        <thead>
+            <tr>
+                <th scope="col">Date</th>
+                <th scope="col">Country</th>
+                <th scope="col">Currency</th>
+                <th scope="col">Amount</th>
+                <th scope="col">Convert To Euro</th>
+                <th scope="col">Country Group</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+
+    <div class="alert alert-success" role="alert">
+        <h4 class="alert-heading">Total Amount Per Country Group</h4>
+    </div>
+    <table class="table" id="tbl_amount_group">
+        <thead>
+            <tr>
+                <th scope="col">Country Group</th>
+                <th scope="col">Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>

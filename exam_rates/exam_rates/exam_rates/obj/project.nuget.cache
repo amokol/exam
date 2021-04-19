@@ -1,0 +1,14 @@
+{
+  "version": 2,
+  "dgSpecHash": "pJVAYPFQBICBlykuqztGpyrY3NRM5G8YekgCb0byHP6x1dzLRH85+PajdWya0rVlUn00TYEP+RZ4w3vqvYGUFA==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\Anjo\\Desktop\\exam_wesource\\exam_rates\\exam_rates\\exam_rates.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Anjo\\.nuget\\packages\\microsoft.aspnetcore.jsonpatch\\3.1.14\\microsoft.aspnetcore.jsonpatch.3.1.14.nupkg.sha512",
+    "C:\\Users\\Anjo\\.nuget\\packages\\microsoft.aspnetcore.mvc.newtonsoftjson\\3.1.14\\microsoft.aspnetcore.mvc.newtonsoftjson.3.1.14.nupkg.sha512",
+    "C:\\Users\\Anjo\\.nuget\\packages\\microsoft.csharp\\4.7.0\\microsoft.csharp.4.7.0.nupkg.sha512",
+    "C:\\Users\\Anjo\\.nuget\\packages\\newtonsoft.json\\12.0.2\\newtonsoft.json.12.0.2.nupkg.sha512",
+    "C:\\Users\\Anjo\\.nuget\\packages\\newtonsoft.json.bson\\1.0.2\\newtonsoft.json.bson.1.0.2.nupkg.sha512"
+  ],
+  "logs": []
+}

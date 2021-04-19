@@ -1,0 +1,88 @@
+﻿@{
+    ViewData["Title"] = "Upload Files Page";
+}
+
+<script>
+    function uploadFiles(inputId) {
+        var file_list = document.getElementById(inputId).files;
+        var form_data = new FormData();
+
+        for (var i = 0; i != file_list.length; i++) {
+            form_data.append("files", file_list[i]);
+        }
+        $('#tbl_rate tbody').empty();
+        $.ajax(
+            {
+                url: "/Home/Uploader",
+                data: form_data,
+                processData: false,
+                contentType: false,
+                type: "POST",
+                beforeSend: function () {
+                    $('#loader').show();
+                },
+                complete: function () {
+                    $('#loader').hide();
+                },
+                success: function (data) {
+                    updateTable(data);
+                    $('#files').val('');
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    console.log(XMLHttpRequest);
+                    console.log(textStatus);
+                    console.log(errorThrown);
+
+                }
+            }
+        );
+    }
+
+    function updateTable(data)
+    {
+        var rates = JSON.parse(data);
+        $("#upload_rates").val(data);
+        $(rates).each(function (index, item) {
+            $('#tbl_rate tbody').append(
+                '<tr><td>' + item.rate_date +
+                '</td><td>' + item.country +
+                '</td><td>' + item.currency +
+                '</td><td>' + item.amount +
+                '</td></tr>'
+            );
+        });
+        $('#tbl_rate').DataTable({
+            searching: true,
+            ordering: true
+        });
+
+
+    }
+
+
+</script>
+
+<div class="text-left">
+    <div class="input-group mb-3">
+        <div class="input-group-prepend">
+            <span class="input-group-text" id="inputGroupFileAddon01">Upload</span>
+        </div>
+        <div class="custom-file">
+            <input id="files" name="files" type="file" class="custom-file-input" accept=".csv" multiple onchange="uploadFiles('files');" />
+            <label class="custom-file-label" for="files">Choose CSV files</label>
+        </div>
+    </div>
+    <input type="hidden" id="upload_rates" value="">
+    <table class="table" id="tbl_rate">
+        <thead>
+            <tr>
+                <th scope="col">Date</th>
+                <th scope="col">Country</th>
+                <th scope="col">Currency</th>
+                <th scope="col">Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>

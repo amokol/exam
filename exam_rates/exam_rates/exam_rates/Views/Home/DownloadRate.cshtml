@@ -1,0 +1,104 @@
+﻿@{
+    ViewData["Title"] = "Download Rates Page";
+}
+<script>
+
+    var date_day = 0;
+    var concat_rate_values = "";
+    var date_val = "";
+
+    function downloadRates() {
+
+        var access_key = "3585214882123cda7f850a179d7efa41";
+        var base = "EUR";
+        date_day = 1;
+        concat_rate_values = "";
+        $('#tbl_eur_rates tbody').empty();
+        while (date_day < 32)
+        {
+            if (date_day < 10)
+            {
+                date_val = "2019-10-0" + date_day;
+            }
+            else
+            {
+                date_val = "2019-10-" + date_day;
+            }
+            var url_rates = "http://data.fixer.io/api/" + date_val + "?access_key=" + access_key + "&base=" + base + "&symbols=USD,AUD,CAD,GBP,EUR";
+            $.ajax(
+                {
+                    url: url_rates,
+                    success: function (data) {
+                        setRates(data);
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        console.log(XMLHttpRequest);
+                        console.log(textStatus);
+                        console.log(errorThrown);
+
+                    }
+                }
+            );
+            
+            date_day = date_day + 1;
+        }
+        
+        
+    }
+
+    function setRates(data, date_rate)
+    {
+        var date_reponse = "";
+        $.each(data, function (key, element) {
+
+            if (key === "date")
+            {
+                date_reponse = element;
+            }
+            if (key == "rates")
+            {
+                $.each(element, function (key2, element2) {
+                    $('#tbl_eur_rates tbody').append(
+                        '<tr><td>' + date_reponse +
+                        '</td><td>EUR</td><td>' + key2 +
+                        '</td><td>' + element2 +
+                        '</td></tr>'
+                    );
+                    if (concat_rate_values == "")
+                    {
+                        concat_rate_values = '{"rate_date": "' + date_reponse + '","currency":"' + key2 + '", "rate":' + element2+'}';
+                    }
+                    else
+                    {
+                        concat_rate_values = concat_rate_values + ',{"rate_date": "' + date_reponse + '","currency":"' + key2 + '", "rate":' + element2 + '}';
+                    }
+                });
+                $("#download_rates").val('[' + concat_rate_values + ']');
+            }
+        });
+    }
+</script>
+<input type="hidden" value="" id="download_rates" />
+<div class="text-left">
+    <div class="form-row">
+        <div class="col-4">
+            <div class="buttons">
+                <div class="download-button">
+                    <input type="button" id="btn_submit" class="btn btn-info" value="Download Rates" onclick="downloadRates();" />
+                </div>
+            </div>
+        </div>
+    </div>
+    <table class="table" id="tbl_eur_rates">
+        <thead>
+            <tr>
+                <th scope="col">Date</th>
+                <th scope="col">Base</th>
+                <th scope="col">Country</th>
+                <th scope="col">Rate</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>
